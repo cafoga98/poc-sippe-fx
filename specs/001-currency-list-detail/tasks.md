@@ -182,9 +182,9 @@ Single Flutter project, feature-first (Constitution Principle I): `lib/core/`, `
 
 **Purpose**: Final quality gates across all stories (Constitution Principles VI–VII)
 
-- [ ] T065 [P] Run `flutter analyze` (zero warnings) and `dart format --set-exit-if-changed .` across all files added/changed above
-- [ ] T066 [P] Run `flutter test --coverage` and confirm domain-layer coverage (`lib/features/*/domain/`) is ≥80% per Principle VI, inspecting `coverage/lcov.info`
-- [ ] T067 Run `flutter pub run build_runner build --delete-conflicting-outputs` for a final regeneration of all `freezed`/`json_serializable`/`injectable`/`hive` codegen once every annotated class above exists
+- [X] T065 [P] Run `flutter analyze` (zero warnings) and `dart format --set-exit-if-changed .` across all files added/changed above
+- [X] T066 [P] Run `flutter test --coverage` and confirm domain-layer coverage (`lib/features/*/domain/`) is ≥80% per Principle VI, inspecting `coverage/lcov.info`
+- [X] T067 Run `flutter pub run build_runner build --delete-conflicting-outputs` for a final regeneration of all `freezed`/`json_serializable`/`injectable`/`hive` codegen once every annotated class above exists
 - [ ] T068 Execute the manual validation scenarios in `quickstart.md` end to end (US1–US4 plus the three Edge Cases spot-checks)
 
 ---
