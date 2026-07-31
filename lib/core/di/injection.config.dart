@@ -34,6 +34,8 @@ import 'package:poc_sippe_fx/features/currency_list/data/repositories/currency_r
     as _i825;
 import 'package:poc_sippe_fx/features/currency_list/domain/repositories/currency_repository.dart'
     as _i981;
+import 'package:poc_sippe_fx/features/currency_list/domain/usecases/filter_currencies.dart'
+    as _i746;
 import 'package:poc_sippe_fx/features/currency_list/domain/usecases/get_currency_rates.dart'
     as _i192;
 import 'package:poc_sippe_fx/features/currency_list/presentation/cubit/currency_list_cubit.dart'
@@ -47,6 +49,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final dioModule = _$DioModule();
+    gh.factory<_i746.FilterCurrencies>(() => const _i746.FilterCurrencies());
     gh.lazySingleton<_i361.Dio>(() => dioModule.dio);
     gh.lazySingleton<_i296.ApiClient>(() => _i296.ApiClient(gh<_i361.Dio>()));
     gh.lazySingleton<_i30.HistoryRemoteDataSource>(
@@ -77,6 +80,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i253.CurrencyListCubit(
         gh<_i192.GetCurrencyRates>(),
         gh<_i200.BaseCurrencyStore>(),
+        gh<_i746.FilterCurrencies>(),
       ),
     );
     return this;

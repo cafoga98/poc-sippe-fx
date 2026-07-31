@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/design/design_tokens.dart';
+import '../../../../core/widgets/app_search_bar.dart';
 
 /// Page-specific composition (not a standalone Figma component) — title +
 /// subtitle for `CurrencyListPage`'s header, per the "FX Monitor / List"
-/// frame. Also hosts the base-currency selector (US3, FR-002/FR-004): no
-/// dedicated Figma component exists for this control (design-context.md is
-/// silent on it), so it's kept visually minimal, built only from
-/// `design_tokens.dart` values.
+/// frame. Also hosts the base-currency selector (US3, FR-002/FR-004) and the
+/// search field (US4, FR-012): no dedicated Figma component exists for the
+/// base-currency picker (design-context.md is silent on it), so it's kept
+/// visually minimal, built only from `design_tokens.dart` values.
 class CurrencyListHeader extends StatelessWidget {
   const CurrencyListHeader({
     super.key,
@@ -15,6 +16,8 @@ class CurrencyListHeader extends StatelessWidget {
     required this.subtitle,
     this.availableCodes = const [],
     this.onSelectBaseCurrency,
+    required this.searchController,
+    required this.onSearchChanged,
   });
 
   final String title;
@@ -24,6 +27,9 @@ class CurrencyListHeader extends StatelessWidget {
   /// currencies the user can already see, never a fabricated global list.
   final List<String> availableCodes;
   final ValueChanged<String>? onSelectBaseCurrency;
+
+  final TextEditingController searchController;
+  final ValueChanged<String> onSearchChanged;
 
   bool get _canPickBase =>
       availableCodes.isNotEmpty && onSelectBaseCurrency != null;
@@ -57,6 +63,8 @@ class CurrencyListHeader extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: DesignTokens.spacingMd),
+        AppSearchBar(controller: searchController, onChanged: onSearchChanged),
       ],
     );
   }

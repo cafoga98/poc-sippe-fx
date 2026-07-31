@@ -127,4 +127,57 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     },
   );
+
+  testWidgets(
+    'typing a query calls search(); non-matching results render a no-results message '
+    '(not a blank list); clearing the field restores the full list',
+    (tester) async {
+      const rows = [
+        CurrencyRowData(code: 'USD', name: 'US Dollar', rate: 1.0),
+        CurrencyRowData(code: 'EUR', name: 'Euro', rate: 0.92),
+      ];
+      const loadedAll = CurrencyListState.loaded(
+        rows: rows,
+        baseCode: 'USD',
+        searchQuery: '',
+      );
+
+      // 1) Typing into the search field calls cubit.search() with the query.
+      when(() => cubit.state).thenReturn(loadedAll);
+      when(() => cubit.search(any())).thenAnswer((_) {});
+
+      await tester.pumpWidget(wrap(const CurrencyListPage()));
+
+      expect(find.byType(ListView), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'eur');
+      await tester.pump();
+
+      verify(() => cubit.search('eur')).called(1);
+
+      // 2) A non-matching query (empty rows + non-empty searchQuery) renders
+      // a no-results message instead of a blank list.
+      await tester.pumpWidget(const SizedBox());
+      when(() => cubit.state).thenReturn(
+        const CurrencyListState.loaded(
+          rows: [],
+          baseCode: 'USD',
+          searchQuery: 'xyz',
+        ),
+      );
+      await tester.pumpWidget(wrap(const CurrencyListPage()));
+
+      expect(find.byType(ListView), findsNothing);
+      expect(find.textContaining('No se encontraron'), findsOneWidget);
+
+      // 3) Clearing the query restores the full list.
+      await tester.pumpWidget(const SizedBox());
+      when(() => cubit.state).thenReturn(loadedAll);
+      await tester.pumpWidget(wrap(const CurrencyListPage()));
+
+      expect(find.byType(ListView), findsOneWidget);
+      expect(find.text('USD'), findsWidgets);
+      expect(find.text('EUR'), findsWidgets);
+    },
+  );
 }

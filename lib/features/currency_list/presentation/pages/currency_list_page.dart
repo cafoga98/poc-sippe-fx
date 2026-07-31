@@ -11,8 +11,21 @@ import '../cubit/currency_list_cubit.dart';
 import '../cubit/currency_list_state.dart';
 import '../widgets/currency_list_header.dart';
 
-class CurrencyListPage extends StatelessWidget {
+class CurrencyListPage extends StatefulWidget {
   const CurrencyListPage({super.key});
+
+  @override
+  State<CurrencyListPage> createState() => _CurrencyListPageState();
+}
+
+class _CurrencyListPageState extends State<CurrencyListPage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +49,9 @@ class CurrencyListPage extends StatelessWidget {
                     onSelectBaseCurrency: (code) => context
                         .read<CurrencyListCubit>()
                         .changeBaseCurrency(code),
+                    searchController: _searchController,
+                    onSearchChanged: (query) =>
+                        context.read<CurrencyListCubit>().search(query),
                   ),
                   const SizedBox(height: DesignTokens.spacingLg),
                   const Text(
@@ -86,13 +102,40 @@ class _CurrencyListBody extends StatelessWidget {
       initial: () => const SizedBox.shrink(),
       loading: () => const Center(child: CircularProgressIndicator()),
       loaded: (rows, baseCode, searchQuery) =>
-          _CurrencyRowList(rows: rows, baseCode: baseCode),
+          _resultsView(rows, baseCode, searchQuery),
       error: (failure) => _ErrorView(
         message: failure.message,
         onRetry: () => context.read<CurrencyListCubit>().refresh(),
       ),
       staleData: (rows, baseCode, searchQuery, lastFailure) =>
-          _CurrencyRowList(rows: rows, baseCode: baseCode),
+          _resultsView(rows, baseCode, searchQuery),
+    );
+  }
+
+  Widget _resultsView(
+    List<CurrencyRowData> rows,
+    String baseCode,
+    String searchQuery,
+  ) {
+    if (rows.isEmpty && searchQuery.isNotEmpty) {
+      return const _NoResultsView();
+    }
+    return _CurrencyRowList(rows: rows, baseCode: baseCode);
+  }
+}
+
+class _NoResultsView extends StatelessWidget {
+  const _NoResultsView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'No se encontraron monedas.',
+        style: DesignTokens.textBodyRegular14.copyWith(
+          color: DesignTokens.colorTextSecondary,
+        ),
+      ),
     );
   }
 }

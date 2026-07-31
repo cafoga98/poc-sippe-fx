@@ -2,16 +2,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/settings/base_currency_store.dart';
+import '../../domain/usecases/filter_currencies.dart';
 import '../../domain/usecases/get_currency_rates.dart';
 import 'currency_list_state.dart';
 
 @injectable
 class CurrencyListCubit extends Cubit<CurrencyListState> {
-  CurrencyListCubit(this._getCurrencyRates, this._baseCurrencyStore)
-    : super(const CurrencyListState.initial());
+  CurrencyListCubit(
+    this._getCurrencyRates,
+    this._baseCurrencyStore,
+    this._filterCurrencies,
+  ) : super(const CurrencyListState.initial());
 
   final GetCurrencyRates _getCurrencyRates;
   final BaseCurrencyStore _baseCurrencyStore;
+  final FilterCurrencies _filterCurrencies;
+
+  /// The full, unfiltered set of rows from the last successful fetch —
+  /// `search` always re-filters from this, never from the (possibly
+  /// already-filtered) rows currently on screen.
+  List<CurrencyRowData> _allRows = const [];
 
   /// Initial load — reads the persisted base currency then fetches rates.
   Future<void> load() => _fetch(baseCode: _baseCurrencyStore.read());
@@ -33,6 +43,25 @@ class CurrencyListCubit extends Cubit<CurrencyListState> {
   Future<void> changeBaseCurrency(String code) async {
     await _baseCurrencyStore.save(code);
     await _fetch(baseCode: code);
+  }
+
+  /// Re-runs [_filterCurrencies] against [_allRows] — a pure, synchronous,
+  /// client-side filter (FR-012–FR-014), never a network call per keystroke
+  /// (research.md §11). A no-op if nothing has been loaded yet.
+  void search(String query) {
+    final baseCode = state.mapOrNull(
+      loaded: (s) => s.baseCode,
+      staleData: (s) => s.baseCode,
+    );
+    if (baseCode == null) return;
+
+    emit(
+      CurrencyListState.loaded(
+        rows: _filterCurrencies(_allRows, query),
+        baseCode: baseCode,
+        searchQuery: query,
+      ),
+    );
   }
 
   Future<void> _fetch({required String baseCode}) async {
@@ -74,13 +103,16 @@ class CurrencyListCubit extends Cubit<CurrencyListState> {
           emit(CurrencyListState.error(failure: failure));
         }
       },
-      (rows) => emit(
-        CurrencyListState.loaded(
-          rows: rows,
-          baseCode: baseCode,
-          searchQuery: '',
-        ),
-      ),
+      (rows) {
+        _allRows = rows;
+        emit(
+          CurrencyListState.loaded(
+            rows: rows,
+            baseCode: baseCode,
+            searchQuery: '',
+          ),
+        );
+      },
     );
   }
 }
