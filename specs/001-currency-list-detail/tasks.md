@@ -67,30 +67,30 @@ Single Flutter project, feature-first (Constitution Principle I): `lib/core/`, `
 
 > Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T016 [P] [US1] `Currency` entity test in `test/features/currency_list/domain/entities/currency_test.dart` — valid 3-letter uppercase code accepted, invalid shapes rejected
-- [ ] T017 [P] [US1] `GetCurrencyRates` usecase test in `test/features/currency_list/domain/usecases/get_currency_rates_test.dart` — `mocktail`-mocked `CurrencyRepository`; joins currencies+rates into rows, propagates `Failure` from either call
-- [ ] T018 [P] [US1] `CurrencyRepositoryImpl` test in `test/features/currency_list/data/repositories/currency_repository_impl_test.dart` — `mocktail`-mocked `CurrencyRemoteDataSource`; asserts the synthesized `rate: 1.0` self-entry for `baseCode == quoteCode` and `Failure` pass-through
-- [ ] T019 [US1] `CurrencyListCubit` test (`bloc_test`) in `test/features/currency_list/presentation/cubit/currency_list_cubit_test.dart` — covers `initial → loading → loaded` (success), `initial → loading → error` (failure, no prior data), and `loaded → loading → staleData` (refresh fails with prior data kept, FR-019)
-- [ ] T020 [US1] `CurrencyListPage` widget test in `test/features/currency_list/presentation/pages/currency_list_page_test.dart` — loading state renders a progress indicator (no list/error), error state renders the failure message + a retry `AppButton` that re-invokes the load when tapped
+- [X] T016 [P] [US1] `Currency` entity test in `test/features/currency_list/domain/entities/currency_test.dart` — valid 3-letter uppercase code accepted, invalid shapes rejected
+- [X] T017 [P] [US1] `GetCurrencyRates` usecase test in `test/features/currency_list/domain/usecases/get_currency_rates_test.dart` — `mocktail`-mocked `CurrencyRepository`; joins currencies+rates into rows, propagates `Failure` from either call
+- [X] T018 [P] [US1] `CurrencyRepositoryImpl` test in `test/features/currency_list/data/repositories/currency_repository_impl_test.dart` — `mocktail`-mocked `CurrencyRemoteDataSource`; asserts the synthesized `rate: 1.0` self-entry for `baseCode == quoteCode` and `Failure` pass-through
+- [X] T019 [US1] `CurrencyListCubit` test (`bloc_test`) in `test/features/currency_list/presentation/cubit/currency_list_cubit_test.dart` — covers `initial → loading → loaded` (success), `initial → loading → error` (failure, no prior data), and `loaded → loading → staleData` (refresh fails with prior data kept, FR-019)
+- [X] T020 [US1] `CurrencyListPage` widget test in `test/features/currency_list/presentation/pages/currency_list_page_test.dart` — loading state renders a progress indicator (no list/error), error state renders the failure message + a retry `AppButton` that re-invokes the load when tapped
 
 ### Implementation for User Story 1
 
-- [ ] T021 [P] [US1] `Currency` entity (`code`, `name`, code-format validation) in `lib/features/currency_list/domain/entities/currency.dart`
-- [ ] T022 [P] [US1] `ExchangeRate` entity (`baseCode`, `quoteCode`, `rate`, `asOf`) in `lib/features/currency_list/domain/entities/exchange_rate.dart`
-- [ ] T023 [US1] `CurrencyRepository` abstract interface (`getAvailableCurrencies()`, `getLatestRates({required String baseCode})`) in `lib/features/currency_list/domain/repositories/currency_repository.dart` (depends on T021, T022)
-- [ ] T024 [P] [US1] `CurrencyDto` (freezed + json_serializable) in `lib/features/currency_list/data/models/currency_dto.dart` (depends on T021)
-- [ ] T025 [P] [US1] `RatesResponseDto` (freezed + json_serializable) in `lib/features/currency_list/data/models/rates_response_dto.dart` (depends on T022)
-- [ ] T026 [US1] `CurrencyRemoteDataSource` in `lib/features/currency_list/data/datasources/currency_remote_data_source.dart` — calls `ApiClient.getCurrencies()` / `getRates(base: ...)` (depends on T007, T024, T025)
-- [ ] T027 [US1] `CurrencyRepositoryImpl` in `lib/features/currency_list/data/repositories/currency_repository_impl.dart` — maps DTOs to domain entities, synthesizes the base-against-itself `ExchangeRate(rate: 1.0)` (depends on T023, T026)
-- [ ] T028 [US1] `GetCurrencyRates` usecase in `lib/features/currency_list/domain/usecases/get_currency_rates.dart` — combines `getAvailableCurrencies` + `getLatestRates`, joined by `code`, into `CurrencyRowData` (depends on T023)
-- [ ] T029 [US1] `CurrencyListState` freezed union (`initial`, `loading`, `loaded`, `error`, `staleData`) in `lib/features/currency_list/presentation/cubit/currency_list_state.dart` per data-model.md
-- [ ] T030 [US1] `CurrencyListCubit` in `lib/features/currency_list/presentation/cubit/currency_list_cubit.dart` — on init reads `BaseCurrencyStore.read()` then loads rates; failure with no prior data → `error`, failure with prior data → `staleData` (depends on T028, T009, T029)
-- [ ] T031 [P] [US1] `CurrencyRow` widget in `lib/core/widgets/currency_row.dart` per `contracts/widget-components.md` (depends on T005)
-- [ ] T032 [P] [US1] `TrendCard` widget in `lib/core/widgets/trend_card.dart` — Positive/Negative variant derived from `deltaPercent.sign`, tinted badge per research.md §9 (depends on T005, T015)
-- [ ] T033 [US1] Page-specific composition `currency_list_header.dart` (title + subtitle) and `trend_row.dart` (2× `TrendCard`) in `lib/features/currency_list/presentation/widgets/` (depends on T032)
-- [ ] T034 [US1] `CurrencyListPage` in `lib/features/currency_list/presentation/pages/currency_list_page.dart` — `BlocBuilder<CurrencyListCubit, CurrencyListState>` rendering loading/loaded (`CurrencyRow` list)/error+retry(`AppButton`)/staleData, composes header, trend row, `BottomNavBar` (depends on T030, T031, T033, T013, T014)
-- [ ] T035 [US1] `go_router` setup in `lib/core/router/app_router.dart` with the `/list` route → `CurrencyListPage` (depends on T034)
-- [ ] T036 [US1] App bootstrap in `lib/main.dart` — `Hive.initFlutter()`, register the `app_settings` box, `configureDependencies()`, `runApp(MaterialApp.router(routerConfig: appRouter))` (depends on T012, T035, T010)
+- [X] T021 [P] [US1] `Currency` entity (`code`, `name`, code-format validation) in `lib/features/currency_list/domain/entities/currency.dart`
+- [X] T022 [P] [US1] `ExchangeRate` entity (`baseCode`, `quoteCode`, `rate`, `asOf`) in `lib/features/currency_list/domain/entities/exchange_rate.dart`
+- [X] T023 [US1] `CurrencyRepository` abstract interface (`getAvailableCurrencies()`, `getLatestRates({required String baseCode})`) in `lib/features/currency_list/domain/repositories/currency_repository.dart` (depends on T021, T022)
+- [X] T024 [P] [US1] `CurrencyDto` (freezed + json_serializable) in `lib/features/currency_list/data/models/currency_dto.dart` (depends on T021)
+- [X] T025 [P] [US1] `RatesResponseDto` (freezed + json_serializable) in `lib/features/currency_list/data/models/rates_response_dto.dart` (depends on T022)
+- [X] T026 [US1] `CurrencyRemoteDataSource` in `lib/features/currency_list/data/datasources/currency_remote_data_source.dart` — calls `ApiClient.getCurrencies()` / `getRates(base: ...)` (depends on T007, T024, T025)
+- [X] T027 [US1] `CurrencyRepositoryImpl` in `lib/features/currency_list/data/repositories/currency_repository_impl.dart` — maps DTOs to domain entities, synthesizes the base-against-itself `ExchangeRate(rate: 1.0)` (depends on T023, T026)
+- [X] T028 [US1] `GetCurrencyRates` usecase in `lib/features/currency_list/domain/usecases/get_currency_rates.dart` — combines `getAvailableCurrencies` + `getLatestRates`, joined by `code`, into `CurrencyRowData` (depends on T023)
+- [X] T029 [US1] `CurrencyListState` freezed union (`initial`, `loading`, `loaded`, `error`, `staleData`) in `lib/features/currency_list/presentation/cubit/currency_list_state.dart` per data-model.md
+- [X] T030 [US1] `CurrencyListCubit` in `lib/features/currency_list/presentation/cubit/currency_list_cubit.dart` — on init reads `BaseCurrencyStore.read()` then loads rates; failure with no prior data → `error`, failure with prior data → `staleData` (depends on T028, T009, T029)
+- [X] T031 [P] [US1] `CurrencyRow` widget in `lib/core/widgets/currency_row.dart` per `contracts/widget-components.md` (depends on T005)
+- [X] T032 [P] [US1] `TrendCard` widget in `lib/core/widgets/trend_card.dart` — Positive/Negative variant derived from `deltaPercent.sign`, tinted badge per research.md §9 (depends on T005, T015)
+- [X] T033 [US1] Page-specific composition `currency_list_header.dart` (title + subtitle) and `trend_row.dart` (2× `TrendCard`) in `lib/features/currency_list/presentation/widgets/` (depends on T032)
+- [X] T034 [US1] `CurrencyListPage` in `lib/features/currency_list/presentation/pages/currency_list_page.dart` — `BlocBuilder<CurrencyListCubit, CurrencyListState>` rendering loading/loaded (`CurrencyRow` list)/error+retry(`AppButton`)/staleData, composes header, trend row, `BottomNavBar` (depends on T030, T031, T033, T013, T014)
+- [X] T035 [US1] `go_router` setup in `lib/core/router/app_router.dart` with the `/list` route → `CurrencyListPage` (depends on T034)
+- [X] T036 [US1] App bootstrap in `lib/main.dart` — `Hive.initFlutter()`, register the `app_settings` box, `configureDependencies()`, `runApp(MaterialApp.router(routerConfig: appRouter))` (depends on T012, T035, T010)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable (MVP)
 
