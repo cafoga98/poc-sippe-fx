@@ -18,6 +18,16 @@ import 'package:poc_sippe_fx/core/network/dio_module.dart' as _i1072;
 import 'package:poc_sippe_fx/core/settings/base_currency_store.dart' as _i200;
 import 'package:poc_sippe_fx/core/settings/hive_base_currency_store.dart'
     as _i540;
+import 'package:poc_sippe_fx/features/currency_detail/data/datasources/history_remote_data_source.dart'
+    as _i30;
+import 'package:poc_sippe_fx/features/currency_detail/data/repositories/history_repository_impl.dart'
+    as _i877;
+import 'package:poc_sippe_fx/features/currency_detail/domain/repositories/history_repository.dart'
+    as _i871;
+import 'package:poc_sippe_fx/features/currency_detail/domain/usecases/get_historical_rate_series.dart'
+    as _i749;
+import 'package:poc_sippe_fx/features/currency_detail/presentation/cubit/currency_detail_cubit.dart'
+    as _i62;
 import 'package:poc_sippe_fx/features/currency_list/data/datasources/currency_remote_data_source.dart'
     as _i120;
 import 'package:poc_sippe_fx/features/currency_list/data/repositories/currency_repository_impl.dart'
@@ -39,14 +49,26 @@ extension GetItInjectableX on _i174.GetIt {
     final dioModule = _$DioModule();
     gh.lazySingleton<_i361.Dio>(() => dioModule.dio);
     gh.lazySingleton<_i296.ApiClient>(() => _i296.ApiClient(gh<_i361.Dio>()));
+    gh.lazySingleton<_i30.HistoryRemoteDataSource>(
+      () => _i30.HistoryRemoteDataSource(gh<_i296.ApiClient>()),
+    );
     gh.lazySingleton<_i120.CurrencyRemoteDataSource>(
       () => _i120.CurrencyRemoteDataSource(gh<_i296.ApiClient>()),
+    );
+    gh.lazySingleton<_i871.HistoryRepository>(
+      () => _i877.HistoryRepositoryImpl(gh<_i30.HistoryRemoteDataSource>()),
+    );
+    gh.factory<_i749.GetHistoricalRateSeries>(
+      () => _i749.GetHistoricalRateSeries(gh<_i871.HistoryRepository>()),
     );
     gh.lazySingleton<_i200.BaseCurrencyStore>(
       () => _i540.HiveBaseCurrencyStore(gh<_i979.Box<String>>()),
     );
     gh.lazySingleton<_i981.CurrencyRepository>(
       () => _i825.CurrencyRepositoryImpl(gh<_i120.CurrencyRemoteDataSource>()),
+    );
+    gh.factory<_i62.CurrencyDetailCubit>(
+      () => _i62.CurrencyDetailCubit(gh<_i749.GetHistoricalRateSeries>()),
     );
     gh.factory<_i192.GetCurrencyRates>(
       () => _i192.GetCurrencyRates(gh<_i981.CurrencyRepository>()),
