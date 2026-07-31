@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:poc_sippe_fx/core/network/failure.dart';
 import 'package:poc_sippe_fx/core/settings/base_currency_store.dart';
+import 'package:poc_sippe_fx/features/currency_list/domain/usecases/filter_currencies.dart';
 import 'package:poc_sippe_fx/features/currency_list/domain/usecases/get_currency_rates.dart';
 import 'package:poc_sippe_fx/features/currency_list/presentation/cubit/currency_list_cubit.dart';
 import 'package:poc_sippe_fx/features/currency_list/presentation/cubit/currency_list_state.dart';
@@ -33,7 +34,11 @@ void main() {
       when(
         () => getCurrencyRates(baseCode: 'USD'),
       ).thenAnswer((_) async => const Right(rows));
-      return CurrencyListCubit(getCurrencyRates, baseCurrencyStore);
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
     },
     act: (cubit) => cubit.load(),
     expect: () => const [
@@ -48,7 +53,11 @@ void main() {
       when(
         () => getCurrencyRates(baseCode: 'USD'),
       ).thenAnswer((_) async => const Left(Failure.network()));
-      return CurrencyListCubit(getCurrencyRates, baseCurrencyStore);
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
     },
     act: (cubit) => cubit.load(),
     expect: () => const [
@@ -63,7 +72,11 @@ void main() {
       when(
         () => getCurrencyRates(baseCode: 'USD'),
       ).thenAnswer((_) async => const Right(rows));
-      return CurrencyListCubit(getCurrencyRates, baseCurrencyStore);
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
     },
     act: (cubit) async {
       await cubit.load();
@@ -100,7 +113,11 @@ void main() {
       when(
         () => getCurrencyRates(baseCode: 'EUR'),
       ).thenAnswer((_) async => const Right(eurRows));
-      return CurrencyListCubit(getCurrencyRates, baseCurrencyStore);
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
     },
     act: (cubit) async {
       await cubit.load();
@@ -128,7 +145,11 @@ void main() {
       when(
         () => getCurrencyRates(baseCode: 'EUR'),
       ).thenAnswer((_) async => const Left(Failure.network()));
-      return CurrencyListCubit(getCurrencyRates, baseCurrencyStore);
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
     },
     act: (cubit) async {
       await cubit.load();
@@ -154,12 +175,96 @@ void main() {
       when(
         () => getCurrencyRates(baseCode: 'EUR'),
       ).thenAnswer((_) async => const Left(Failure.network()));
-      return CurrencyListCubit(getCurrencyRates, baseCurrencyStore);
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
     },
     act: (cubit) => cubit.changeBaseCurrency('EUR'),
     expect: () => const [
       CurrencyListState.loading(),
       CurrencyListState.error(failure: Failure.network()),
+    ],
+  );
+
+  blocTest<CurrencyListCubit, CurrencyListState>(
+    'search(): loaded rows narrow to matches for the query',
+    build: () {
+      when(
+        () => getCurrencyRates(baseCode: 'USD'),
+      ).thenAnswer((_) async => const Right(rows));
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
+    },
+    act: (cubit) async {
+      await cubit.load();
+      cubit.search('eur');
+    },
+    expect: () => const [
+      CurrencyListState.loading(),
+      CurrencyListState.loaded(rows: rows, baseCode: 'USD', searchQuery: ''),
+      CurrencyListState.loaded(
+        rows: [CurrencyRowData(code: 'EUR', name: 'Euro', rate: 0.92)],
+        baseCode: 'USD',
+        searchQuery: 'eur',
+      ),
+    ],
+  );
+
+  blocTest<CurrencyListCubit, CurrencyListState>(
+    'search(): a non-matching query narrows rows to empty while keeping the query '
+    '(the no-results indication the page renders from)',
+    build: () {
+      when(
+        () => getCurrencyRates(baseCode: 'USD'),
+      ).thenAnswer((_) async => const Right(rows));
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
+    },
+    act: (cubit) async {
+      await cubit.load();
+      cubit.search('xyz');
+    },
+    expect: () => const [
+      CurrencyListState.loading(),
+      CurrencyListState.loaded(rows: rows, baseCode: 'USD', searchQuery: ''),
+      CurrencyListState.loaded(rows: [], baseCode: 'USD', searchQuery: 'xyz'),
+    ],
+  );
+
+  blocTest<CurrencyListCubit, CurrencyListState>(
+    'search(): clearing the query restores the full list',
+    build: () {
+      when(
+        () => getCurrencyRates(baseCode: 'USD'),
+      ).thenAnswer((_) async => const Right(rows));
+      return CurrencyListCubit(
+        getCurrencyRates,
+        baseCurrencyStore,
+        FilterCurrencies(),
+      );
+    },
+    act: (cubit) async {
+      await cubit.load();
+      cubit.search('eur');
+      cubit.search('');
+    },
+    expect: () => const [
+      CurrencyListState.loading(),
+      CurrencyListState.loaded(rows: rows, baseCode: 'USD', searchQuery: ''),
+      CurrencyListState.loaded(
+        rows: [CurrencyRowData(code: 'EUR', name: 'Euro', rate: 0.92)],
+        baseCode: 'USD',
+        searchQuery: 'eur',
+      ),
+      CurrencyListState.loaded(rows: rows, baseCode: 'USD', searchQuery: ''),
     ],
   );
 }

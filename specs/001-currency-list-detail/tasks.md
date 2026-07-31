@@ -163,16 +163,16 @@ Single Flutter project, feature-first (Constitution Principle I): `lib/core/`, `
 
 > Write these tests FIRST, ensure they FAIL before implementation. T059/T060 extend the existing test files from T019/T020 with new `group`s.
 
-- [ ] T058 [P] [US4] `FilterCurrencies` usecase test in `test/features/currency_list/domain/usecases/filter_currencies_test.dart` — case-insensitive match, partial code match, partial name match, empty query returns the full list, no-match returns an empty list
-- [ ] T059 [US4] Extend `test/features/currency_list/presentation/cubit/currency_list_cubit_test.dart` — `search(query)` transitions: `loaded` rows narrow to matches, empty-match yields a "no results" indication in state, clearing the query restores the full list (depends on T019, T054)
-- [ ] T060 [US4] Extend `test/features/currency_list/presentation/pages/currency_list_page_test.dart` — typing a matching query narrows the rendered rows, typing a non-matching query renders a "no results" message (not a blank list), clearing the field restores the full list (depends on T020, T055)
+- [X] T058 [P] [US4] `FilterCurrencies` usecase test in `test/features/currency_list/domain/usecases/filter_currencies_test.dart` — case-insensitive match, partial code match, partial name match, empty query returns the full list, no-match returns an empty list
+- [X] T059 [US4] Extend `test/features/currency_list/presentation/cubit/currency_list_cubit_test.dart` — `search(query)` transitions: `loaded` rows narrow to matches, empty-match yields a "no results" indication in state, clearing the query restores the full list (depends on T019, T054)
+- [X] T060 [US4] Extend `test/features/currency_list/presentation/pages/currency_list_page_test.dart` — typing a matching query narrows the rendered rows, typing a non-matching query renders a "no results" message (not a blank list), clearing the field restores the full list (depends on T020, T055)
 
 ### Implementation for User Story 4
 
-- [ ] T061 [P] [US4] `FilterCurrencies` usecase (pure function: case-insensitive, partial code/name match) in `lib/features/currency_list/domain/usecases/filter_currencies.dart` (depends on T021)
-- [ ] T062 [P] [US4] `AppSearchBar` widget in `lib/core/widgets/app_search_bar.dart` per `contracts/widget-components.md` (depends on T005)
-- [ ] T063 [US4] Add `search(String query)` to `CurrencyListCubit` in `lib/features/currency_list/presentation/cubit/currency_list_cubit.dart` — re-runs `FilterCurrencies` against the already-fetched list (no network call per keystroke, research.md §11), updates `searchQuery`/`rows` in `loaded` state (depends on T030, T056, T061)
-- [ ] T064 [US4] Wire `AppSearchBar` into `lib/features/currency_list/presentation/widgets/currency_list_header.dart`, `onChanged` calling `cubit.search(query)`; render a "no results" state in `CurrencyListPage` when `rows` is empty and `searchQuery` is non-empty (depends on T034, T057, T062, T063)
+- [X] T061 [P] [US4] `FilterCurrencies` usecase (pure function: case-insensitive, partial code/name match) in `lib/features/currency_list/domain/usecases/filter_currencies.dart` (depends on T021)
+- [X] T062 [P] [US4] `AppSearchBar` widget in `lib/core/widgets/app_search_bar.dart` per `contracts/widget-components.md` (depends on T005)
+- [X] T063 [US4] Add `search(String query)` to `CurrencyListCubit` in `lib/features/currency_list/presentation/cubit/currency_list_cubit.dart` — re-runs `FilterCurrencies` against the already-fetched list (no network call per keystroke, research.md §11), updates `searchQuery`/`rows` in `loaded` state (depends on T030, T056, T061)
+- [X] T064 [US4] Wire `AppSearchBar` into `lib/features/currency_list/presentation/widgets/currency_list_header.dart`, `onChanged` calling `cubit.search(query)`; render a "no results" state in `CurrencyListPage` when `rows` is empty and `searchQuery` is non-empty (depends on T034, T057, T062, T063)
 
 **Checkpoint**: All four user stories are independently functional
 
