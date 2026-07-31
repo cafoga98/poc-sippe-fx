@@ -28,9 +28,9 @@ Single Flutter project, feature-first (Constitution Principle I): `lib/core/`, `
 
 **Purpose**: Project initialization — dependencies and directory skeleton
 
-- [ ] T001 Add runtime deps (`flutter_bloc`, `dio`, `fpdart`, `get_it`, `injectable`, `go_router`, `freezed_annotation`, `json_annotation`, `hive`, `hive_flutter`) and dev deps (`mocktail`, `bloc_test`, `build_runner`, `injectable_generator`, `freezed`, `json_serializable`, `hive_generator`) to `pubspec.yaml`, then run `flutter pub get`
-- [ ] T002 [P] Create the feature-first directory skeleton per `plan.md` Project Structure: `lib/core/{design,network,settings,di,router,widgets}/`, `lib/features/currency_list/{data/{datasources,models,repositories},domain/{entities,repositories,usecases},presentation/{cubit,pages,widgets}}/`, `lib/features/currency_detail/{data/{datasources,models,repositories},domain/{entities,repositories,usecases},presentation/{cubit,pages,widgets}}/`, and matching subtrees under `test/`
-- [ ] T003 [P] Remove the default Flutter counter-app scaffold body from `lib/main.dart` and `test/widget_test.dart` (kept as empty entry points — real bootstrap lands in T036)
+- [X] T001 Add runtime deps (`flutter_bloc`, `dio`, `fpdart`, `get_it`, `injectable`, `go_router`, `freezed_annotation`, `json_annotation`, `hive`, `hive_flutter`) and dev deps (`mocktail`, `bloc_test`, `build_runner`, `injectable_generator`, `freezed`, `json_serializable`, `hive_generator`) to `pubspec.yaml`, then run `flutter pub get`
+- [X] T002 [P] Create the feature-first directory skeleton per `plan.md` Project Structure: `lib/core/{design,network,settings,di,router,widgets}/`, `lib/features/currency_list/{data/{datasources,models,repositories},domain/{entities,repositories,usecases},presentation/{cubit,pages,widgets}}/`, `lib/features/currency_detail/{data/{datasources,models,repositories},domain/{entities,repositories,usecases},presentation/{cubit,pages,widgets}}/`, and matching subtrees under `test/`
+- [X] T003 [P] Remove the default Flutter counter-app scaffold body from `lib/main.dart` and `test/widget_test.dart` (kept as empty entry points — real bootstrap lands in T036)
 
 ---
 
@@ -40,18 +40,18 @@ Single Flutter project, feature-first (Constitution Principle I): `lib/core/`, `
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create the `Failure` sealed union (`network`/`server`/`parsing`/`noData`, each with a Spanish `message` getter) in `lib/core/network/failure.dart` per `contracts/repository-interfaces.md`
-- [ ] T005 [P] Create `lib/core/design/design_tokens.dart` mapping every Foundations token from `design-context.md` 1:1 (colors, `Inter` type scale incl. the one-off `fontSizeDisplayHero = 40.0` per research.md §10, spacing, radius, shadows) as named Dart constants
-- [ ] T006 Create the injectable `@module` Dio provider in `lib/core/network/dio_module.dart` — single `Dio` instance, 15s connect + 15s receive timeouts, base URL `https://api.frankfurter.dev/v2/` (depends on T001)
-- [ ] T007 Create `ApiClient` in `lib/core/network/api_client.dart` wrapping the shared `Dio`: `getCurrencies()`, `getRates({required String base})`, `getTimeSeries({required String base, required String quotes, required String from})`, each returning `Either<Failure, T>` per `contracts/frankfurter-api.md` (depends on T004, T006)
-- [ ] T008 [P] `ApiClient` test in `test/core/network/api_client_test.dart` — `mocktail`-mocked `Dio`, asserts 2xx responses map to `Right`, non-2xx/timeout/malformed-JSON map to the correct `Failure` variant (depends on T007)
-- [ ] T009 [P] Create the `BaseCurrencyStore` domain interface (`read()`, `save(String code)`) in `lib/core/settings/base_currency_store.dart` per `contracts/repository-interfaces.md`
-- [ ] T010 Implement `HiveBaseCurrencyStore` in `lib/core/settings/hive_base_currency_store.dart` — Hive box `app_settings`, key `selected_base_currency`, defaults to `"USD"` when unset (depends on T009)
-- [ ] T011 [P] `HiveBaseCurrencyStore` test in `test/core/settings/hive_base_currency_store_test.dart` — `save`/`read` round-trip against an in-memory Hive box, default-to-`"USD"` when the box is empty (depends on T010)
-- [ ] T012 Create the `get_it` + `injectable` DI bootstrap (`@InjectableInit` entry point, `configureDependencies()`) in `lib/core/di/injection.dart` (depends on T001)
-- [ ] T013 [P] `AppButton` widget (Primary/Secondary variants, Default/Pressed/Disabled states) in `lib/core/widgets/app_button.dart` per `contracts/widget-components.md` (depends on T005)
-- [ ] T014 [P] `BottomNavBar` widget (4 destinations, only `Markets` wired later) in `lib/core/widgets/bottom_nav_bar.dart` per `contracts/widget-components.md` (depends on T005)
-- [ ] T015 [P] `TrendSparkline` `CustomPainter` widget (normalized line through points, positive/negative stroke color) in `lib/core/widgets/trend_sparkline.dart` per research.md §2 (depends on T005)
+- [X] T004 [P] Create the `Failure` sealed union (`network`/`server`/`parsing`/`noData`, each with a Spanish `message` getter) in `lib/core/network/failure.dart` per `contracts/repository-interfaces.md`
+- [X] T005 [P] Create `lib/core/design/design_tokens.dart` mapping every Foundations token from `design-context.md` 1:1 (colors, `Inter` type scale incl. the one-off `fontSizeDisplayHero = 40.0` per research.md §10, spacing, radius, shadows) as named Dart constants
+- [X] T006 Create the injectable `@module` Dio provider in `lib/core/network/dio_module.dart` — single `Dio` instance, 15s connect + 15s receive timeouts, base URL `https://api.frankfurter.dev/v2/` (depends on T001)
+- [X] T007 Create `ApiClient` in `lib/core/network/api_client.dart` wrapping the shared `Dio`: `getCurrencies()`, `getRates({required String base})`, `getTimeSeries({required String base, required String quotes, required String from})`, each returning `Either<Failure, T>` per `contracts/frankfurter-api.md` (depends on T004, T006)
+- [X] T008 [P] `ApiClient` test in `test/core/network/api_client_test.dart` — `mocktail`-mocked `Dio`, asserts 2xx responses map to `Right`, non-2xx/timeout/malformed-JSON map to the correct `Failure` variant (depends on T007)
+- [X] T009 [P] Create the `BaseCurrencyStore` domain interface (`read()`, `save(String code)`) in `lib/core/settings/base_currency_store.dart` per `contracts/repository-interfaces.md`
+- [X] T010 Implement `HiveBaseCurrencyStore` in `lib/core/settings/hive_base_currency_store.dart` — Hive box `app_settings`, key `selected_base_currency`, defaults to `"USD"` when unset (depends on T009)
+- [X] T011 [P] `HiveBaseCurrencyStore` test in `test/core/settings/hive_base_currency_store_test.dart` — `save`/`read` round-trip against an in-memory Hive box, default-to-`"USD"` when the box is empty (depends on T010)
+- [X] T012 Create the `get_it` + `injectable` DI bootstrap (`@InjectableInit` entry point, `configureDependencies()`) in `lib/core/di/injection.dart` (depends on T001)
+- [X] T013 [P] `AppButton` widget (Primary/Secondary variants, Default/Pressed/Disabled states) in `lib/core/widgets/app_button.dart` per `contracts/widget-components.md` (depends on T005)
+- [X] T014 [P] `BottomNavBar` widget (4 destinations, only `Markets` wired later) in `lib/core/widgets/bottom_nav_bar.dart` per `contracts/widget-components.md` (depends on T005)
+- [X] T015 [P] `TrendSparkline` `CustomPainter` widget (normalized line through points, positive/negative stroke color) in `lib/core/widgets/trend_sparkline.dart` per research.md §2 (depends on T005)
 
 **Checkpoint**: Foundation ready — user story implementation can now begin
 
