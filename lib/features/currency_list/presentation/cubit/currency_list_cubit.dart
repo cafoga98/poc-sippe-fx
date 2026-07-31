@@ -26,10 +26,27 @@ class CurrencyListCubit extends Cubit<CurrencyListState> {
     return _fetch(baseCode: lastBaseCode ?? _baseCurrencyStore.read());
   }
 
+  /// Persists [code] as the new base currency, then re-fetches rates against
+  /// it (FR-002, FR-004). `_fetch` emits `loading` immediately, hiding every
+  /// row until the new data arrives — no row is ever shown next to a
+  /// mismatched base label (Edge Case).
+  Future<void> changeBaseCurrency(String code) async {
+    await _baseCurrencyStore.save(code);
+    await _fetch(baseCode: code);
+  }
+
   Future<void> _fetch({required String baseCode}) async {
     final previousRows = state.mapOrNull(
       loaded: (s) => s.rows,
       staleData: (s) => s.rows,
+    );
+    // The base these previousRows actually belong to — may differ from the
+    // [baseCode] being fetched (e.g. mid changeBaseCurrency). staleData must
+    // be tagged with this, not the failed attempt's code, since the rows
+    // shown are still denominated in the old base.
+    final previousBaseCode = state.mapOrNull(
+      loaded: (s) => s.baseCode,
+      staleData: (s) => s.baseCode,
     );
     final previousQuery =
         state.mapOrNull(
@@ -48,7 +65,7 @@ class CurrencyListCubit extends Cubit<CurrencyListState> {
           emit(
             CurrencyListState.staleData(
               rows: previousRows,
-              baseCode: baseCode,
+              baseCode: previousBaseCode ?? baseCode,
               searchQuery: previousQuery,
               lastFailure: failure,
             ),

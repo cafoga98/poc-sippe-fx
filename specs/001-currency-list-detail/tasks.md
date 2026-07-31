@@ -141,13 +141,13 @@ Single Flutter project, feature-first (Constitution Principle I): `lib/core/`, `
 
 > Write these tests FIRST, ensure they FAIL before implementation. These extend the existing test files from T019/T020 with new `group`s — do not remove US1's cases.
 
-- [ ] T054 [US3] Extend `test/features/currency_list/presentation/cubit/currency_list_cubit_test.dart` — `changeBaseCurrency` transitions: `loaded → loading → loaded` (new base, `BaseCurrencyStore.save` called), `loaded → loading → error`/`staleData` on failure (depends on T019)
-- [ ] T055 [US3] Extend `test/features/currency_list/presentation/pages/currency_list_page_test.dart` — selecting a new base currency shows a loading state then rows reflecting the new base, with no stale-base rows left on screen mid-transition (depends on T020)
+- [X] T054 [US3] Extend `test/features/currency_list/presentation/cubit/currency_list_cubit_test.dart` — `changeBaseCurrency` transitions: `loaded → loading → loaded` (new base, `BaseCurrencyStore.save` called), `loaded → loading → error`/`staleData` on failure (depends on T019)
+- [X] T055 [US3] Extend `test/features/currency_list/presentation/pages/currency_list_page_test.dart` — selecting a new base currency shows a loading state then rows reflecting the new base, with no stale-base rows left on screen mid-transition (depends on T020)
 
 ### Implementation for User Story 3
 
-- [ ] T056 [US3] Add `changeBaseCurrency(String code)` to `CurrencyListCubit` in `lib/features/currency_list/presentation/cubit/currency_list_cubit.dart` — `loading` immediately (no mixed-base rows, Edge Case), `BaseCurrencyStore.save(code)`, re-invoke `GetCurrencyRates`, failure → `error`/`staleData` per FR-019 (depends on T030)
-- [ ] T057 [US3] Add a base-currency selector affordance to `lib/features/currency_list/presentation/widgets/currency_list_header.dart` — tapping the base code opens a lightweight picker (e.g. modal sheet) listing the already-loaded currencies, selecting one calls `cubit.changeBaseCurrency(code)`; no dedicated Figma component exists for this control (design-context.md is silent on it), so keep it visually minimal and built only from `design_tokens.dart` values (depends on T033, T056)
+- [X] T056 [US3] Add `changeBaseCurrency(String code)` to `CurrencyListCubit` in `lib/features/currency_list/presentation/cubit/currency_list_cubit.dart` — `loading` immediately (no mixed-base rows, Edge Case), `BaseCurrencyStore.save(code)`, re-invoke `GetCurrencyRates`, failure → `error`/`staleData` per FR-019 (depends on T030)
+- [X] T057 [US3] Add a base-currency selector affordance to `lib/features/currency_list/presentation/widgets/currency_list_header.dart` — tapping the base code opens a lightweight picker (e.g. modal sheet) listing the already-loaded currencies, selecting one calls `cubit.changeBaseCurrency(code)`; no dedicated Figma component exists for this control (design-context.md is silent on it), so keep it visually minimal and built only from `design_tokens.dart` values (depends on T033, T056)
 
 **Checkpoint**: User Stories 1, 2, AND 3 all work independently
 
