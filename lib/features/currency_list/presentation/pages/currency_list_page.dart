@@ -32,6 +32,10 @@ class CurrencyListPage extends StatelessWidget {
                   CurrencyListHeader(
                     title: 'FX Monitor',
                     subtitle: 'Moneda base: ${_baseCodeOf(state)}',
+                    availableCodes: _availableCodesOf(state),
+                    onSelectBaseCurrency: (code) => context
+                        .read<CurrencyListCubit>()
+                        .changeBaseCurrency(code),
                   ),
                   const SizedBox(height: DesignTokens.spacingLg),
                   const Text(
@@ -60,6 +64,14 @@ class CurrencyListPage extends StatelessWidget {
           staleData: (s) => s.baseCode,
         ) ??
         '—';
+  }
+
+  List<String> _availableCodesOf(CurrencyListState state) {
+    return state.mapOrNull(
+          loaded: (s) => s.rows.map((r) => r.code).toList(),
+          staleData: (s) => s.rows.map((r) => r.code).toList(),
+        ) ??
+        const [];
   }
 }
 

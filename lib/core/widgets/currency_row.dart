@@ -47,7 +47,7 @@ class _CurrencyRowState extends State<CurrencyRow> {
       onTapCancel: () => _setPressed(false),
       onTap: widget.onTap,
       child: Container(
-        height: 64,
+        constraints: const BoxConstraints(minHeight: 64),
         padding: const EdgeInsets.all(DesignTokens.spacingMd),
         decoration: BoxDecoration(
           color: _pressed
