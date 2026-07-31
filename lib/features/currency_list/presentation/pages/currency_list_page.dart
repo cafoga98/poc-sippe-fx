@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/design/design_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
@@ -72,21 +73,23 @@ class _CurrencyListBody extends StatelessWidget {
     return state.when(
       initial: () => const SizedBox.shrink(),
       loading: () => const Center(child: CircularProgressIndicator()),
-      loaded: (rows, baseCode, searchQuery) => _CurrencyRowList(rows: rows),
+      loaded: (rows, baseCode, searchQuery) =>
+          _CurrencyRowList(rows: rows, baseCode: baseCode),
       error: (failure) => _ErrorView(
         message: failure.message,
         onRetry: () => context.read<CurrencyListCubit>().refresh(),
       ),
       staleData: (rows, baseCode, searchQuery, lastFailure) =>
-          _CurrencyRowList(rows: rows),
+          _CurrencyRowList(rows: rows, baseCode: baseCode),
     );
   }
 }
 
 class _CurrencyRowList extends StatelessWidget {
-  const _CurrencyRowList({required this.rows});
+  const _CurrencyRowList({required this.rows, required this.baseCode});
 
   final List<CurrencyRowData> rows;
+  final String baseCode;
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +103,7 @@ class _CurrencyRowList extends StatelessWidget {
           code: row.code,
           name: row.name,
           rate: row.rate,
-          onTap: () {},
+          onTap: () => context.push('/detail/$baseCode/${row.code}'),
         );
       },
     );

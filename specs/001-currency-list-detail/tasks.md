@@ -106,26 +106,26 @@ Single Flutter project, feature-first (Constitution Principle I): `lib/core/`, `
 
 > Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T037 [P] [US2] `HistoricalRateSeries` entity test in `test/features/currency_detail/domain/entities/historical_rate_series_test.dart` — `percentChange`/`minRate`/`maxRate`/`isPositiveTrend` correctness, including a single-point series and non-contiguous dates (non-trading-day gaps, Edge Case)
-- [ ] T038 [P] [US2] `GetHistoricalRateSeries` usecase test in `test/features/currency_detail/domain/usecases/get_historical_rate_series_test.dart` — `mocktail`-mocked `HistoryRepository`; empty `points` list surfaces `Failure.noData`, never reaches `percentChange`/`minRate`/`maxRate` unguarded
-- [ ] T039 [P] [US2] `HistoryRepositoryImpl` test in `test/features/currency_detail/data/repositories/history_repository_impl_test.dart` — `mocktail`-mocked `HistoryRemoteDataSource`; maps the date-keyed response into ascending `RatePoint`s
-- [ ] T040 [US2] `CurrencyDetailCubit` test (`bloc_test`) in `test/features/currency_detail/presentation/cubit/currency_detail_cubit_test.dart` — covers `loading → loaded`, `loading → error` (no prior data), `loaded → loading → staleData` (refresh fails with prior data kept, FR-019)
-- [ ] T041 [US2] `CurrencyDetailPage` widget test in `test/features/currency_detail/presentation/pages/currency_detail_page_test.dart` — loading state renders a progress indicator, error state renders the failure message + a retry `AppButton` that re-invokes the load when tapped
+- [X] T037 [P] [US2] `HistoricalRateSeries` entity test in `test/features/currency_detail/domain/entities/historical_rate_series_test.dart` — `percentChange`/`minRate`/`maxRate`/`isPositiveTrend` correctness, including a single-point series and non-contiguous dates (non-trading-day gaps, Edge Case)
+- [X] T038 [P] [US2] `GetHistoricalRateSeries` usecase test in `test/features/currency_detail/domain/usecases/get_historical_rate_series_test.dart` — `mocktail`-mocked `HistoryRepository`; empty `points` list surfaces `Failure.noData`, never reaches `percentChange`/`minRate`/`maxRate` unguarded
+- [X] T039 [P] [US2] `HistoryRepositoryImpl` test in `test/features/currency_detail/data/repositories/history_repository_impl_test.dart` — `mocktail`-mocked `HistoryRemoteDataSource`; maps the date-keyed response into ascending `RatePoint`s
+- [X] T040 [US2] `CurrencyDetailCubit` test (`bloc_test`) in `test/features/currency_detail/presentation/cubit/currency_detail_cubit_test.dart` — covers `loading → loaded`, `loading → error` (no prior data), `loaded → loading → staleData` (refresh fails with prior data kept, FR-019)
+- [X] T041 [US2] `CurrencyDetailPage` widget test in `test/features/currency_detail/presentation/pages/currency_detail_page_test.dart` — loading state renders a progress indicator, error state renders the failure message + a retry `AppButton` that re-invokes the load when tapped
 
 ### Implementation for User Story 2
 
-- [ ] T042 [P] [US2] `RatePoint` entity (`date`, `rate`) in `lib/features/currency_detail/domain/entities/rate_point.dart`
-- [ ] T043 [P] [US2] `HistoricalRateSeries` entity (`baseCode`, `quoteCode`, `points`, derived getters `percentChange`/`minRate`/`maxRate`/`isPositiveTrend`) in `lib/features/currency_detail/domain/entities/historical_rate_series.dart` (depends on T042)
-- [ ] T044 [US2] `HistoryRepository` abstract interface (`getThirtyDayHistory({required baseCode, required quoteCode, DateTime? asOfDate})`) in `lib/features/currency_detail/domain/repositories/history_repository.dart` (depends on T043)
-- [ ] T045 [P] [US2] `TimeSeriesResponseDto` (freezed + json_serializable) in `lib/features/currency_detail/data/models/time_series_response_dto.dart`
-- [ ] T046 [US2] `HistoryRemoteDataSource` in `lib/features/currency_detail/data/datasources/history_remote_data_source.dart` — calls `ApiClient.getTimeSeries(base:, quotes:, from:)` with `from = (asOfDate ?? now) - 30 days` formatted `YYYY-MM-DD` (depends on T007, T045)
-- [ ] T047 [US2] `HistoryRepositoryImpl` in `lib/features/currency_detail/data/repositories/history_repository_impl.dart` — maps the date-keyed DTO into ascending `RatePoint`s (depends on T044, T046)
-- [ ] T048 [US2] `GetHistoricalRateSeries` usecase in `lib/features/currency_detail/domain/usecases/get_historical_rate_series.dart` — empty series → `Failure.noData` guard (depends on T044)
-- [ ] T049 [US2] `CurrencyDetailState` freezed union (`loading`, `loaded`, `error`, `staleData`) in `lib/features/currency_detail/presentation/cubit/currency_detail_state.dart`
-- [ ] T050 [US2] `CurrencyDetailCubit` in `lib/features/currency_detail/presentation/cubit/currency_detail_cubit.dart` — loads on init with the base+quote passed at navigation time, `refresh()` re-invokes the same params for retry (FR-011) (depends on T048, T049)
-- [ ] T051 [P] [US2] `StatsCard` widget in `lib/features/currency_detail/presentation/widgets/stats_card.dart` — 3 rows: "Cambio 30d" / "Mínimo 30d" / "Máximo 30d" per research.md §7 (depends on T005)
-- [ ] T052 [US2] `CurrencyDetailPage` in `lib/features/currency_detail/presentation/pages/currency_detail_page.dart` — `BlocBuilder<CurrencyDetailCubit, CurrencyDetailState>`, hero rate at `fontSizeDisplayHero`, 180px `TrendSparkline` chart, `StatsCard`, `AppButton` retry on error, `BottomNavBar` (depends on T050, T051, T015, T013, T014)
-- [ ] T053 [US2] Extend `lib/core/router/app_router.dart` with `/detail/:baseCode/:quoteCode` → `CurrencyDetailPage`; wire `CurrencyRow.onTap` in `CurrencyListPage` to navigate (depends on T035, T052, T031)
+- [X] T042 [P] [US2] `RatePoint` entity (`date`, `rate`) in `lib/features/currency_detail/domain/entities/rate_point.dart`
+- [X] T043 [P] [US2] `HistoricalRateSeries` entity (`baseCode`, `quoteCode`, `points`, derived getters `percentChange`/`minRate`/`maxRate`/`isPositiveTrend`) in `lib/features/currency_detail/domain/entities/historical_rate_series.dart` (depends on T042)
+- [X] T044 [US2] `HistoryRepository` abstract interface (`getThirtyDayHistory({required baseCode, required quoteCode, DateTime? asOfDate})`) in `lib/features/currency_detail/domain/repositories/history_repository.dart` (depends on T043)
+- [X] T045 [P] [US2] `TimeSeriesResponseDto` (freezed + json_serializable) in `lib/features/currency_detail/data/models/time_series_response_dto.dart`
+- [X] T046 [US2] `HistoryRemoteDataSource` in `lib/features/currency_detail/data/datasources/history_remote_data_source.dart` — calls `ApiClient.getTimeSeries(base:, quotes:, from:)` with `from = (asOfDate ?? now) - 30 days` formatted `YYYY-MM-DD` (depends on T007, T045)
+- [X] T047 [US2] `HistoryRepositoryImpl` in `lib/features/currency_detail/data/repositories/history_repository_impl.dart` — maps the date-keyed DTO into ascending `RatePoint`s (depends on T044, T046)
+- [X] T048 [US2] `GetHistoricalRateSeries` usecase in `lib/features/currency_detail/domain/usecases/get_historical_rate_series.dart` — empty series → `Failure.noData` guard (depends on T044)
+- [X] T049 [US2] `CurrencyDetailState` freezed union (`loading`, `loaded`, `error`, `staleData`) in `lib/features/currency_detail/presentation/cubit/currency_detail_state.dart`
+- [X] T050 [US2] `CurrencyDetailCubit` in `lib/features/currency_detail/presentation/cubit/currency_detail_cubit.dart` — loads on init with the base+quote passed at navigation time, `refresh()` re-invokes the same params for retry (FR-011) (depends on T048, T049)
+- [X] T051 [P] [US2] `StatsCard` widget in `lib/features/currency_detail/presentation/widgets/stats_card.dart` — 3 rows: "Cambio 30d" / "Mínimo 30d" / "Máximo 30d" per research.md §7 (depends on T005)
+- [X] T052 [US2] `CurrencyDetailPage` in `lib/features/currency_detail/presentation/pages/currency_detail_page.dart` — `BlocBuilder<CurrencyDetailCubit, CurrencyDetailState>`, hero rate at `fontSizeDisplayHero`, 180px `TrendSparkline` chart, `StatsCard`, `AppButton` retry on error, `BottomNavBar` (depends on T050, T051, T015, T013, T014)
+- [X] T053 [US2] Extend `lib/core/router/app_router.dart` with `/detail/:baseCode/:quoteCode` → `CurrencyDetailPage`; wire `CurrencyRow.onTap` in `CurrencyListPage` to navigate (depends on T035, T052, T031)
 
 **Checkpoint**: User Stories 1 AND 2 both work independently
 
