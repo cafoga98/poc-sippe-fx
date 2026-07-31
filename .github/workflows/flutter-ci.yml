@@ -1,0 +1,37 @@
+name: Flutter CI
+ 
+on:
+  push:
+    branches: [main, "0*-*"]
+  pull_request:
+    branches: [main]
+ 
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+ 
+      - name: Install dependencies
+        run: flutter pub get
+ 
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+ 
+      - name: Analyze (zero warnings — constitution requirement)
+        run: flutter analyze
+ 
+      - name: Run tests with coverage
+        run: flutter test --coverage
+ 
+      - name: Check domain coverage >= 80% (constitution Principle V)
+        run: |
+          sudo apt-get install -y lcov
+          lcov --extract coverage/lcov.info '*/domain/*' -o coverage/domain.info
+          COVERAGE=$(lcov --summary coverage/domain.info | grep lines | grep -oP '\d+\.\d+(?=%)')
+          echo "Domain coverage: $COVERAGE%"
+          awk -v cov="$COVERAGE" 'BEGIN { exit (cov+0 < 80) }'
