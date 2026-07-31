@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CurrencyDto {
 
- String get code; String get name;
+@JsonKey(name: 'iso_code') String get code; String get name;
 /// Create a copy of CurrencyDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $CurrencyDtoCopyWith<$Res>  {
   factory $CurrencyDtoCopyWith(CurrencyDto value, $Res Function(CurrencyDto) _then) = _$CurrencyDtoCopyWithImpl;
 @useResult
 $Res call({
- String code, String name
+@JsonKey(name: 'iso_code') String code, String name
 });
 
 
@@ -154,7 +154,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String code,  String name)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'iso_code')  String code,  String name)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CurrencyDto() when $default != null:
 return $default(_that.code,_that.name);case _:
@@ -175,7 +175,7 @@ return $default(_that.code,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String code,  String name)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'iso_code')  String code,  String name)  $default,) {final _that = this;
 switch (_that) {
 case _CurrencyDto():
 return $default(_that.code,_that.name);case _:
@@ -195,7 +195,7 @@ return $default(_that.code,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String code,  String name)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'iso_code')  String code,  String name)?  $default,) {final _that = this;
 switch (_that) {
 case _CurrencyDto() when $default != null:
 return $default(_that.code,_that.name);case _:
@@ -210,10 +210,10 @@ return $default(_that.code,_that.name);case _:
 @JsonSerializable()
 
 class _CurrencyDto implements CurrencyDto {
-  const _CurrencyDto({required this.code, required this.name});
+  const _CurrencyDto({@JsonKey(name: 'iso_code') required this.code, required this.name});
   factory _CurrencyDto.fromJson(Map<String, dynamic> json) => _$CurrencyDtoFromJson(json);
 
-@override final  String code;
+@override@JsonKey(name: 'iso_code') final  String code;
 @override final  String name;
 
 /// Create a copy of CurrencyDto
@@ -249,7 +249,7 @@ abstract mixin class _$CurrencyDtoCopyWith<$Res> implements $CurrencyDtoCopyWith
   factory _$CurrencyDtoCopyWith(_CurrencyDto value, $Res Function(_CurrencyDto) _then) = __$CurrencyDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String code, String name
+@JsonKey(name: 'iso_code') String code, String name
 });
 
 

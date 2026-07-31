@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/failure.dart';
-import '../models/time_series_response_dto.dart';
+import '../models/rate_entry_dto.dart';
 
 @lazySingleton
 class HistoryRemoteDataSource {
@@ -11,7 +11,7 @@ class HistoryRemoteDataSource {
 
   final ApiClient _apiClient;
 
-  Future<Either<Failure, TimeSeriesResponseDto>> getThirtyDayHistory({
+  Future<Either<Failure, List<RateEntryDto>>> getThirtyDayHistory({
     required String base,
     required String quote,
     DateTime? asOfDate,
@@ -25,9 +25,12 @@ class HistoryRemoteDataSource {
       from: _formatDate(from),
     );
 
-    return result.flatMap((json) {
+    return result.flatMap((list) {
       try {
-        return Right(TimeSeriesResponseDto.fromJson(json));
+        final dtos = list
+            .map((item) => RateEntryDto.fromJson(item as Map<String, dynamic>))
+            .toList();
+        return Right(dtos);
       } catch (_) {
         return const Left(Failure.parsing());
       }

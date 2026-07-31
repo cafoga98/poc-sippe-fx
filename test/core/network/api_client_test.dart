@@ -29,8 +29,11 @@ void main() {
   });
 
   group('getCurrencies', () {
-    test('maps a 2xx response to Right with the decoded body', () async {
-      final payload = {'USD': 'US Dollar', 'EUR': 'Euro'};
+    test('maps a 2xx response to Right with the decoded array body', () async {
+      final payload = [
+        {'iso_code': 'USD', 'name': 'US Dollar'},
+        {'iso_code': 'EUR', 'name': 'Euro'},
+      ];
       when(
         () => dio.get<dynamic>(
           'currencies',
@@ -40,7 +43,7 @@ void main() {
 
       final result = await client.getCurrencies();
 
-      expect(result, Right<Failure, Map<String, dynamic>>(payload));
+      expect(result, Right<Failure, List<dynamic>>(payload));
     });
 
     test('maps a non-2xx response to Failure.server', () async {
@@ -59,10 +62,7 @@ void main() {
 
       final result = await client.getCurrencies();
 
-      expect(
-        result,
-        const Left<Failure, Map<String, dynamic>>(Failure.server(500)),
-      );
+      expect(result, const Left<Failure, List<dynamic>>(Failure.server(500)));
     });
 
     test('maps a connection timeout to Failure.network', () async {
@@ -80,26 +80,20 @@ void main() {
 
       final result = await client.getCurrencies();
 
-      expect(
-        result,
-        const Left<Failure, Map<String, dynamic>>(Failure.network()),
-      );
+      expect(result, const Left<Failure, List<dynamic>>(Failure.network()));
     });
 
-    test('maps a malformed (non-map) JSON body to Failure.parsing', () async {
+    test('maps a malformed (non-array) JSON body to Failure.parsing', () async {
       when(
         () => dio.get<dynamic>(
           'currencies',
           queryParameters: any(named: 'queryParameters'),
         ),
-      ).thenAnswer((_) async => _responseWith(['not', 'a', 'map']));
+      ).thenAnswer((_) async => _responseWith({'not': 'an array'}));
 
       final result = await client.getCurrencies();
 
-      expect(
-        result,
-        const Left<Failure, Map<String, dynamic>>(Failure.parsing()),
-      );
+      expect(result, const Left<Failure, List<dynamic>>(Failure.parsing()));
     });
   });
 
@@ -107,19 +101,17 @@ void main() {
     test(
       'passes base as a query parameter and maps a 2xx response to Right',
       () async {
-        final payload = {
-          'amount': 1.0,
-          'base': 'USD',
-          'date': '2026-07-30',
-          'rates': {'EUR': 0.92},
-        };
+        final payload = [
+          {'date': '2026-07-30', 'base': 'USD', 'quote': 'USD', 'rate': 1.0},
+          {'date': '2026-07-30', 'base': 'USD', 'quote': 'EUR', 'rate': 0.92},
+        ];
         when(
           () => dio.get<dynamic>('rates', queryParameters: {'base': 'USD'}),
         ).thenAnswer((_) async => _responseWith(payload));
 
         final result = await client.getRates(base: 'USD');
 
-        expect(result, Right<Failure, Map<String, dynamic>>(payload));
+        expect(result, Right<Failure, List<dynamic>>(payload));
         verify(
           () => dio.get<dynamic>('rates', queryParameters: {'base': 'USD'}),
         ).called(1);
@@ -141,10 +133,7 @@ void main() {
 
       final result = await client.getRates(base: 'USD');
 
-      expect(
-        result,
-        const Left<Failure, Map<String, dynamic>>(Failure.network()),
-      );
+      expect(result, const Left<Failure, List<dynamic>>(Failure.network()));
     });
   });
 
@@ -152,15 +141,9 @@ void main() {
     test(
       'passes base/quotes/from as query parameters and maps a 2xx response to Right',
       () async {
-        final payload = {
-          'amount': 1.0,
-          'base': 'USD',
-          'start_date': '2026-07-01',
-          'end_date': '2026-07-30',
-          'rates': {
-            '2026-07-01': {'PEN': 3.71},
-          },
-        };
+        final payload = [
+          {'date': '2026-07-01', 'base': 'USD', 'quote': 'PEN', 'rate': 3.71},
+        ];
         when(
           () => dio.get<dynamic>(
             'rates',
@@ -178,7 +161,7 @@ void main() {
           from: '2026-07-01',
         );
 
-        expect(result, Right<Failure, Map<String, dynamic>>(payload));
+        expect(result, Right<Failure, List<dynamic>>(payload));
       },
     );
 
@@ -204,10 +187,7 @@ void main() {
           from: '2026-07-01',
         );
 
-        expect(
-          result,
-          const Left<Failure, Map<String, dynamic>>(Failure.server(404)),
-        );
+        expect(result, const Left<Failure, List<dynamic>>(Failure.server(404)));
       },
     );
   });

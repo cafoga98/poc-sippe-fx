@@ -13,17 +13,15 @@ class ApiClient {
 
   final Dio _dio;
 
-  Future<Either<Failure, Map<String, dynamic>>> getCurrencies() {
+  Future<Either<Failure, List<dynamic>>> getCurrencies() {
     return _get('currencies');
   }
 
-  Future<Either<Failure, Map<String, dynamic>>> getRates({
-    required String base,
-  }) {
+  Future<Either<Failure, List<dynamic>>> getRates({required String base}) {
     return _get('rates', queryParameters: {'base': base});
   }
 
-  Future<Either<Failure, Map<String, dynamic>>> getTimeSeries({
+  Future<Either<Failure, List<dynamic>>> getTimeSeries({
     required String base,
     required String quotes,
     required String from,
@@ -34,7 +32,11 @@ class ApiClient {
     );
   }
 
-  Future<Either<Failure, Map<String, dynamic>>> _get(
+  /// Every Frankfurter v2 endpoint this app calls returns a flat JSON array
+  /// (`[{date, base, quote, rate}, ...]` for rates/time-series,
+  /// `[{iso_code, name, ...}, ...]` for currencies) — not the nested
+  /// object shapes an earlier, incorrect reading of the docs assumed.
+  Future<Either<Failure, List<dynamic>>> _get(
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
@@ -44,7 +46,7 @@ class ApiClient {
         queryParameters: queryParameters,
       );
       final data = response.data;
-      if (data is Map<String, dynamic>) {
+      if (data is List) {
         return Right(data);
       }
       return const Left(Failure.parsing());
