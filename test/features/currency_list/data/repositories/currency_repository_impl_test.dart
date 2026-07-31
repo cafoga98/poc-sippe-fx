@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:poc_sippe_fx/core/network/failure.dart';
 import 'package:poc_sippe_fx/features/currency_list/data/datasources/currency_remote_data_source.dart';
 import 'package:poc_sippe_fx/features/currency_list/data/models/currency_dto.dart';
-import 'package:poc_sippe_fx/features/currency_list/data/models/rates_response_dto.dart';
+import 'package:poc_sippe_fx/features/currency_list/data/models/rate_entry_dto.dart';
 import 'package:poc_sippe_fx/features/currency_list/data/repositories/currency_repository_impl.dart';
 import 'package:poc_sippe_fx/features/currency_list/domain/entities/currency.dart';
 import 'package:poc_sippe_fx/features/currency_list/domain/entities/exchange_rate.dart';
@@ -53,18 +53,59 @@ void main() {
   });
 
   group('getLatestRates', () {
+    test('maps each RateEntryDto to an ExchangeRate, including the '
+        'API-provided base-against-itself entry', () async {
+      when(() => dataSource.getRates(base: 'USD')).thenAnswer(
+        (_) async => const Right([
+          RateEntryDto(
+            date: '2026-07-30',
+            base: 'USD',
+            quote: 'USD',
+            rate: 1.0,
+          ),
+          RateEntryDto(
+            date: '2026-07-30',
+            base: 'USD',
+            quote: 'EUR',
+            rate: 0.92,
+          ),
+        ]),
+      );
+
+      final result = await repository.getLatestRates(baseCode: 'USD');
+
+      final rates = result.getOrElse((_) => []);
+      expect(
+        rates,
+        equals([
+          ExchangeRate(
+            baseCode: 'USD',
+            quoteCode: 'USD',
+            rate: 1.0,
+            asOf: DateTime(2026, 7, 30),
+          ),
+          ExchangeRate(
+            baseCode: 'USD',
+            quoteCode: 'EUR',
+            rate: 0.92,
+            asOf: DateTime(2026, 7, 30),
+          ),
+        ]),
+      );
+    });
+
     test(
-      'synthesizes a rate: 1.0 self-entry for baseCode == quoteCode',
+      'defensively synthesizes a rate: 1.0 self-entry if the response ever omits it',
       () async {
         when(() => dataSource.getRates(base: 'USD')).thenAnswer(
-          (_) async => const Right(
-            RatesResponseDto(
-              amount: 1.0,
-              base: 'USD',
+          (_) async => const Right([
+            RateEntryDto(
               date: '2026-07-30',
-              rates: {'EUR': 0.92},
+              base: 'USD',
+              quote: 'EUR',
+              rate: 0.92,
             ),
-          ),
+          ]),
         );
 
         final result = await repository.getLatestRates(baseCode: 'USD');

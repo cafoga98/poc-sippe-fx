@@ -3,7 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:poc_sippe_fx/core/network/failure.dart';
 import 'package:poc_sippe_fx/features/currency_detail/data/datasources/history_remote_data_source.dart';
-import 'package:poc_sippe_fx/features/currency_detail/data/models/time_series_response_dto.dart';
+import 'package:poc_sippe_fx/features/currency_detail/data/models/rate_entry_dto.dart';
 import 'package:poc_sippe_fx/features/currency_detail/data/repositories/history_repository_impl.dart';
 import 'package:poc_sippe_fx/features/currency_detail/domain/entities/rate_point.dart';
 
@@ -19,7 +19,7 @@ void main() {
     repository = HistoryRepositoryImpl(dataSource);
   });
 
-  test('maps the date-keyed response into ascending RatePoints', () async {
+  test('maps the flat rate-entry array into ascending RatePoints', () async {
     when(
       () => dataSource.getThirtyDayHistory(
         base: 'USD',
@@ -27,19 +27,11 @@ void main() {
         asOfDate: null,
       ),
     ).thenAnswer(
-      (_) async => const Right(
-        TimeSeriesResponseDto(
-          amount: 1.0,
-          base: 'USD',
-          startDate: '2026-07-01',
-          endDate: '2026-07-03',
-          rates: {
-            '2026-07-03': {'PEN': 3.72},
-            '2026-07-01': {'PEN': 3.70},
-            '2026-07-02': {'PEN': 3.71},
-          },
-        ),
-      ),
+      (_) async => const Right([
+        RateEntryDto(date: '2026-07-03', base: 'USD', quote: 'PEN', rate: 3.72),
+        RateEntryDto(date: '2026-07-01', base: 'USD', quote: 'PEN', rate: 3.70),
+        RateEntryDto(date: '2026-07-02', base: 'USD', quote: 'PEN', rate: 3.71),
+      ]),
     );
 
     final result = await repository.getThirtyDayHistory(

@@ -25,13 +25,13 @@ class HistoryRepositoryImpl implements HistoryRepository {
       asOfDate: asOfDate,
     );
 
-    return result.map((dto) {
+    return result.map((entries) {
       final points =
-          dto.rates.entries
+          entries
               .map(
                 (entry) => RatePoint(
-                  date: DateTime.parse(entry.key),
-                  rate: entry.value[quoteCode]!,
+                  date: DateTime.parse(entry.date),
+                  rate: entry.rate,
                 ),
               )
               .toList()

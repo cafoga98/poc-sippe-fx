@@ -27,26 +27,31 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
     required String baseCode,
   }) async {
     final result = await _remoteDataSource.getRates(base: baseCode);
-    return result.map((dto) {
-      final asOf = DateTime.parse(dto.date);
-      final rates = dto.rates.entries
+    return result.map((entries) {
+      final rates = entries
           .map(
             (entry) => ExchangeRate(
-              baseCode: baseCode,
-              quoteCode: entry.key,
-              rate: entry.value,
-              asOf: asOf,
+              baseCode: entry.base,
+              quoteCode: entry.quote,
+              rate: entry.rate,
+              asOf: DateTime.parse(entry.date),
             ),
           )
           .toList();
-      rates.add(
-        ExchangeRate(
-          baseCode: baseCode,
-          quoteCode: baseCode,
-          rate: 1.0,
-          asOf: asOf,
-        ),
-      );
+      // The live API already includes the base-against-itself entry, but
+      // synthesize it defensively in case a response ever omits it (Edge
+      // Case: base currency itself must still appear, showing a rate of 1).
+      if (!rates.any((rate) => rate.quoteCode == baseCode)) {
+        final asOf = rates.isNotEmpty ? rates.first.asOf : DateTime.now();
+        rates.add(
+          ExchangeRate(
+            baseCode: baseCode,
+            quoteCode: baseCode,
+            rate: 1.0,
+            asOf: asOf,
+          ),
+        );
+      }
       return rates;
     });
   }
